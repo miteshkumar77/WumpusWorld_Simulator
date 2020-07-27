@@ -1,0 +1,1 @@
+compile with `clang++ -g <file>.cpp -o <file>.o -lzmqpp -lzmq`
