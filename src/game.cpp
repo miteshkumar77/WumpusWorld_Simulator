@@ -1,22 +1,56 @@
 #include "game.h"
 
 
-Game::Game(std::array<std::array<std::unordered_set<std::string>, 4>, 4> start_board) {
-    resetGame(start_board); 
+Game::Game() {
     observers = std::list<Observer *>(); 
 }
 
+void Game::startGame(std::array<std::array<std::unordered_set<std::string>, 4>, 4> start_board) {
+    resetGame(start_board); 
+}
 
-void Game::resetGame(std::array<std::array<std::unordered_set<std::string>, 4>, 4> start_board) {
+void Game::resetGame(std::array<std::array<std::unordered_set<std::string>, 4>, 4>& start_board) {
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 4; ++j) {
             visible_board[i][j] = std::unordered_set<std::string>(); 
         }
     }
+    finished = false; 
     invisible_board = start_board; 
+    std::array<int, 5> dirs{0, 1, 0, -1, 0}; 
+
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            if (invisible_board[i][j].find("LiveWumpus") != invisible_board[i][j].end()) {
+                for (int x = 0; x < 4; ++x) {
+                    std::array<int, 2> npos{i + dirs[x], j + dirs[x + 1]}; 
+                    if (checkPosition(npos)) {
+                        invisible_board[npos[0]][npos[1]].insert("Stench"); 
+                    }
+                }
+            }
+            if (invisible_board[i][j].find("Pit") != invisible_board[i][j].end()) {
+                for (int x = 0; x < 4; ++x) {
+                    std::array<int, 2> npos{i + dirs[x], j + dirs[x + 1]}; 
+                    if (checkPosition(npos)) {
+                        invisible_board[npos[0]][npos[1]].insert("Breeze"); 
+                    }
+                }
+            }
+            if (invisible_board[i][j].find("Gold") != invisible_board[i][j].end()) {
+                for (int x = 0; x < 4; ++x) {
+                    std::array<int, 2> npos{i + dirs[x], j + dirs[x + 1]}; 
+                    if (checkPosition(npos)) {
+                        invisible_board[npos[0]][npos[1]].insert("Glitter"); 
+                    }
+                }
+            }
+        }
+    }
     robot_position = std::array<int, 2>{0, 0}; 
     hasArrow = true; 
     foundGold = false; 
+    broadcastStateOnMove(); 
 }
 
 
@@ -31,7 +65,7 @@ void Game::subscribeObserver(Observer *observer) throw (char *) {
 
 
 
-void Game::broadcastStateOnShoot(bool up, bool right) {
+void Game::broadcastStateOnShoot(int up, int right) {
     std::vector<std::string> messages; 
     messages.push_back("SHOOT");
 
@@ -75,6 +109,7 @@ void Game::broadcastStateOnMove() {
     int rxi = robot_position[0]; 
     int ryi = robot_position[1];
     if (!checkPosition(robot_position)) {
+        finished = true; 
         messages.push_back("FAIL"); 
         messages.push_back("OUT-OF-BOUNDS");
         notifyObservers(visible_board, robot_position, messages, hasArrow, foundGold); 
@@ -83,6 +118,7 @@ void Game::broadcastStateOnMove() {
 
 
     if (invisible_board[rxi][ryi].find("Pit") != invisible_board[rxi][ryi].end()) {
+        finished = true; 
         messages.push_back("FAIL"); 
         messages.push_back("PIT");
         visible_board[rxi][ryi].insert("Pit"); 
@@ -91,6 +127,7 @@ void Game::broadcastStateOnMove() {
     }
 
     if (invisible_board[rxi][ryi].find("LiveWumpus") != invisible_board[rxi][ryi].end()) {
+        finished = true; 
         messages.push_back("FAIL"); 
         messages.push_back("LIVE-WUMPUS");
         visible_board[rxi][ryi].insert("LiveWumpus"); 
@@ -99,6 +136,7 @@ void Game::broadcastStateOnMove() {
     }
 
     if (foundGold && rxi == 0 && ryi == 0) {
+        finished = true; 
         messages.push_back("SUCCESS"); 
         notifyObservers(visible_board, robot_position, messages, hasArrow, foundGold); 
         return; 
@@ -123,6 +161,7 @@ void Game::broadcastStateOnMove() {
     if (invisible_board[rxi][ryi].find("Gold") != invisible_board[rxi][ryi].end()) {
         messages.push_back("GOLD");
         visible_board[rxi][ryi].insert("Gold"); 
+        foundGold = true; 
     }
 
     notifyObservers(visible_board, robot_position, messages, hasArrow, foundGold); 
@@ -136,6 +175,60 @@ void Game::notifyObservers(std::array<std::array<std::unordered_set<std::string>
     }
 }
 
+
+
+void Game::moveRobotUp() {
+    if (!finished) {
+        ++robot_position[0]; 
+        broadcastStateOnMove(); 
+    }
+}
+
+void Game::moveRobotDown() {
+    if (!finished) {
+        --robot_position[0]; 
+        broadcastStateOnMove(); 
+    }
+}
+
+void Game::moveRobotLeft() {
+
+    if (!finished) {
+        --robot_position[1]; 
+        broadcastStateOnMove(); 
+    }
+}
+
+void Game::moveRobotRight() {
+    if (!finished) {
+        ++robot_position[1]; 
+        broadcastStateOnMove(); 
+    }
+}
+
+void Game::shootArrowUp() {
+    if (!finished) {
+        broadcastStateOnShoot(1, 0); 
+    }
+}
+
+void Game::shootArrowDown() {
+    if (!finished) {
+        broadcastStateOnShoot(-1, 0); 
+    }
+}
+
+void Game::shootArrowLeft() {
+    if (!finished) {
+        broadcastStateOnShoot(0, -1); 
+    }
+}
+
+void Game::shootArrowRight() {
+    if (!finished) {
+        broadcastStateOnShoot(0, 1); 
+    }
+}
 
 bool checkPosition(const std::array<int, 2>& position) {
     return position[0] >= 0 && position[1] >= 0 &&  position[0] < 4 && position[1] < 4; 

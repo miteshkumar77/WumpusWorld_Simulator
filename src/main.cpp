@@ -1,86 +1,51 @@
-#include "obstacle.h"
+#include "game.h"
+#include "observer.h"
 
 int main()
 {
+    Observer o1; 
+    std::array<std::array<std::unordered_set<std::string>, 4>, 4> start_invis_board; 
+    start_invis_board[2][0].insert("LiveWumpus"); 
+    start_invis_board[2][1].insert("Gold"); 
+    start_invis_board[0][2].insert("Pit"); 
+    start_invis_board[2][2].insert("Pit"); 
+    start_invis_board[3][3].insert("Pit"); 
+
+    Game g1; 
+    g1.subscribeObserver(&o1); 
+
+    g1.startGame(start_invis_board); 
+    std::string nextMove; 
+    while(1) {
+        std::cin >> nextMove; 
+        if (nextMove == "move_up") {
+            g1.moveRobotUp(); 
+        } else if (nextMove == "move_down") {
+            g1.moveRobotDown(); 
+        } else if (nextMove == "move_right") {
+            g1.moveRobotRight(); 
+        } else if (nextMove == "move_left") {
+            g1.moveRobotLeft(); 
+        } else if (nextMove == "shoot_up") {
+            g1.shootArrowUp(); 
+        } else if (nextMove == "shoot_down") {
+            g1.shootArrowDown(); 
+        } else if (nextMove == "shoot_left") {
+            g1.shootArrowLeft(); 
+        } else if (nextMove == "shoot_right") {
+            g1.shootArrowLeft(); 
+        } else {
+            std::cout << "INVALID_MOVE, exiting..." << std::endl; 
+            return 0;  
+        }
+        std::cout << std::endl; 
+    }
     return 0;
 }
 
-// #include <bits/stdc++.h>
-
-// class Obstacle
-// {
-// };
-
-// class Pit : public Obstacle
-// {
-// };
-
-// class Breeze : public Obstacle
-// {
-// };
-
-// class Stench : public Obstacle
-// {
-// };
-
-// class Glitter : public Obstacle
-// {
-// };
-
-// class Gold : public Obstacle
-// {
-// };
-
-// class LiveWumpus : public Obstacle
-// {
-// };
-
-// class DeadWumpus : public Obstacle
-// {
-// };
-
-// class ObstacleFactory
-// {
-
-// public:
-//     ObstacleFactory(std::vector<std::string> &obstacles, std::vector<char> &symbols) throw(char *)
-//     {
-//         if (obstacles.size() != num_obstacles || symbols.size() != num_obstacles)
-//         {
-//             throw "Invalid Legend!";
-//         }
-
-//         for (int i = 0; i < num_obstacles; ++i)
-//         {
-//             std::string obstacle = obstacles[i];
-//             char symbol = symbols[i];
-//             if (legend.find(obstacle) != legend.end())
-//             {
-//                 throw "Duplicate definition of obstacle " + obstacle + "!";
-//             }
-
-//             if (rlegend.find(symbol) != rlegend.end())
-//             {
-//                 throw "Duplicate definition of obstacle " + obstacle + "'s symbol " + symbol + "!";
-//             }
-
-//             legend[obstacle] = symbol;
-//             rlegend[symbol] = obstacle;
-//         }
-//     }
-
-//     Obstacle createObstacle(std::string obstacle) throw(char *)
-//     {
-//         if (legend.find(obstacle) == legend.end())
-//         {
-//             throw "There is no obstacle of type '" + obstacle + "'!";
-//         }
-//     }
-
-// private:
-//     const int num_obstacles = 7;
-//     std::unordered_map<std::string, char> legend;  // obstacle -> symbol
-//     std::unordered_map<char, std::string> rlegend; // symbol -> obstacle
-//     const static char **allObstacles{
-//         "Pit", "Breeze", "Stench", "Glitter", "Gold", "LiveWumpus", "DeadWumpus"};
-// };
+// /*
+//  * LiveWumpus
+//  * DeadWumpus
+//  * Pit
+//  * Gold
+//  * /

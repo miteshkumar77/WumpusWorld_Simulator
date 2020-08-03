@@ -13,17 +13,19 @@ protected:
     std::array<int, 2> robot_position;
     bool hasArrow;
     bool foundGold; 
+    bool finished; 
     ObstacleFactory obstacleFactory; 
     std::list<Observer *> observers;
     void checkRep() throw(char *);
     void broadcastStateOnMove();
-    void broadcastStateOnShoot(bool up, bool right); 
+    void broadcastStateOnShoot(int up, int right); 
     void notifyObservers(std::array<std::array<std::unordered_set<std::string>, 4>, 4> &visible_board,
             std::array<int, 2> &robot_position, std::vector<std::string> &messages, bool hasArrow, bool hasGold);
     void updateVisitedSquares();
 public:
-    Game(std::array<std::array<std::unordered_set<std::string>, 4>, 4> start_board);
-    void resetGame(std::array<std::array<std::unordered_set<std::string>, 4>, 4> start_board);
+    Game();
+    void startGame(std::array<std::array<std::unordered_set<std::string>, 4>, 4> start_board); 
+    void resetGame(std::array<std::array<std::unordered_set<std::string>, 4>, 4>& start_board);
     
 
     void subscribeObserver(Observer *observer) throw (char *);
