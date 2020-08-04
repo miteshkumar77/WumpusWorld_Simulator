@@ -1,1 +1,3 @@
-compile with `clang++ -g <file>.cpp -o <file>.o -lzmqpp -lzmq`
+//zeromq libraries `clang++ -g <file>.cpp -o <file>.o -lzmqpp -lzmq`
+
+Compile with: clang++ -g main.cpp observer.cpp game.cpp obstacle.cpp -o m
