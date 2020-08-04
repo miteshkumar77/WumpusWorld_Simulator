@@ -8,8 +8,10 @@
 class Game
 {
 protected:
-    std::array<std::array<std::unordered_set<std::string>, 4>, 4> invisible_board;
-    std::array<std::array<std::unordered_set<std::string>, 4>, 4> visible_board;
+    std::vector<std::vector<std::unordered_set<std::string>>> invisible_board;
+    std::vector<std::vector<std::unordered_set<std::string>>> visible_board;
+    int M;
+    int N; 
     std::array<int, 2> robot_position;
     bool hasArrow;
     bool foundGold; 
@@ -19,13 +21,14 @@ protected:
     void checkRep() throw(char *);
     void broadcastStateOnMove();
     void broadcastStateOnShoot(int up, int right); 
-    void notifyObservers(std::array<std::array<std::unordered_set<std::string>, 4>, 4> &visible_board,
+    void notifyObservers(std::vector<std::vector<std::unordered_set<std::string>>> &visible_board,
             std::array<int, 2> &robot_position, std::vector<std::string> &messages, bool hasArrow, bool hasGold);
     void updateVisitedSquares();
+    bool checkPosition(const std::array<int, 2>& position); 
 public:
     Game();
-    void startGame(std::array<std::array<std::unordered_set<std::string>, 4>, 4> start_board); 
-    void resetGame(std::array<std::array<std::unordered_set<std::string>, 4>, 4>& start_board);
+    void startGame(std::vector<std::vector<std::unordered_set<std::string>>> start_board); 
+    void resetGame(std::vector<std::vector<std::unordered_set<std::string>>>& start_board);
     
 
     void subscribeObserver(Observer *observer) throw (char *);
@@ -44,5 +47,5 @@ public:
 
 };
 
-bool checkPosition(const std::array<int, 2>& position); 
+
 #endif

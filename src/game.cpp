@@ -1,26 +1,29 @@
 #include "game.h"
 
-
 Game::Game() {
     observers = std::list<Observer *>(); 
 }
 
-void Game::startGame(std::array<std::array<std::unordered_set<std::string>, 4>, 4> start_board) {
+void Game::startGame(std::vector<std::vector<std::unordered_set<std::string>>> start_board) {
+    
     resetGame(start_board); 
 }
 
-void Game::resetGame(std::array<std::array<std::unordered_set<std::string>, 4>, 4>& start_board) {
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            visible_board[i][j] = std::unordered_set<std::string>(); 
-        }
-    }
+void Game::resetGame(std::vector<std::vector<std::unordered_set<std::string>>>& start_board) {
+    M = start_board.size(); 
+    N = start_board[0].size(); 
+    visible_board = std::vector<std::vector<std::unordered_set<std::string>>>(M, std::vector<std::unordered_set<std::string>>(N, std::unordered_set<std::string>())); 
+    // for (int i = 0; i < M; ++i) {
+    //     for (int j = 0; j < N; ++j) {
+    //         visible_board[i][j] = std::unordered_set<std::string>(); 
+    //     }
+    // }
     finished = false; 
     invisible_board = start_board; 
     std::array<int, 5> dirs{0, 1, 0, -1, 0}; 
 
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 4; ++j) {
+    for (int i = 0; i < M; ++i) {
+        for (int j = 0; j < N; ++j) {
             if (invisible_board[i][j].find("LiveWumpus") != invisible_board[i][j].end()) {
                 for (int x = 0; x < 4; ++x) {
                     std::array<int, 2> npos{i + dirs[x], j + dirs[x + 1]}; 
@@ -33,6 +36,7 @@ void Game::resetGame(std::array<std::array<std::unordered_set<std::string>, 4>, 
                 for (int x = 0; x < 4; ++x) {
                     std::array<int, 2> npos{i + dirs[x], j + dirs[x + 1]}; 
                     if (checkPosition(npos)) {
+                        // std::cout << npos[0] << ' ' << npos[1] << ' ' << M << ' ' << N << std::endl; 
                         invisible_board[npos[0]][npos[1]].insert("Breeze"); 
                     }
                 }
@@ -168,13 +172,12 @@ void Game::broadcastStateOnMove() {
 
 }
 
-void Game::notifyObservers(std::array<std::array<std::unordered_set<std::string>, 4>, 4> &visible_board,
+void Game::notifyObservers(std::vector<std::vector<std::unordered_set<std::string>>> &visible_board,
             std::array<int, 2> &robot_position, std::vector<std::string> &messages, bool hasArrow, bool hasGold) {
     for (Observer* observer : observers) {
         observer -> update(visible_board, robot_position, messages, hasArrow, hasGold); 
     }
 }
-
 
 
 void Game::moveRobotUp() {
@@ -230,6 +233,7 @@ void Game::shootArrowRight() {
     }
 }
 
-bool checkPosition(const std::array<int, 2>& position) {
-    return position[0] >= 0 && position[1] >= 0 &&  position[0] < 4 && position[1] < 4; 
+bool Game::checkPosition(const std::array<int, 2>& position) {
+    // std::cout << M << ' ' << N << std::endl; 
+    return position[0] >= 0 && position[1] >= 0 && position[0] < M && position[1] < N; 
 }

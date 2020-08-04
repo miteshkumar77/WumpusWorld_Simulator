@@ -5,8 +5,8 @@
 class Observer
 {
 public:
-    void update(std::array<std::array<std::unordered_set<std::string>, 4>, 4> &visible_board,
-            std::array<int, 2> &robot_position, std::vector<std::string> &messages, bool hasArrow, bool hasGold);
+    void update(const std::vector<std::vector<std::unordered_set<std::string>>> &visible_board,
+            const std::array<int, 2> &robot_position, const std::vector<std::string> &messages, bool hasArrow, bool hasGold);
 };
 
 #endif
