@@ -33,7 +33,7 @@ int main()
         } else if (nextMove == "shoot_left") {
             g1.shootArrowLeft(); 
         } else if (nextMove == "shoot_right") {
-            g1.shootArrowLeft(); 
+            g1.shootArrowRight(); 
         } else {
             std::cout << "INVALID_MOVE, exiting..." << std::endl; 
             return 0;  
