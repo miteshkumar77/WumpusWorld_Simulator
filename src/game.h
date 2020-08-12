@@ -1,7 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
 #include <bits/stdc++.h>
-#include <cxxabi.h>
 #include "obstacle.h"
 #include "observer.h"
 

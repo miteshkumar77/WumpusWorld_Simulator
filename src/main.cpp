@@ -4,7 +4,7 @@
 int main()
 {
     Observer o1; 
-    std::array<std::array<std::unordered_set<std::string>, 4>, 4> start_invis_board; 
+    std::vector<std::vector<std::unordered_set<std::string>>> start_invis_board(4, std::vector<std::unordered_set<std::string>>(4, std::unordered_set<std::string>())); 
     start_invis_board[2][0].insert("LiveWumpus"); 
     start_invis_board[2][1].insert("Gold"); 
     start_invis_board[0][2].insert("Pit"); 
@@ -17,6 +17,7 @@ int main()
     g1.startGame(start_invis_board); 
     std::string nextMove; 
     while(1) {
+        std::cout << std::endl; 
         std::cin >> nextMove; 
         if (nextMove == "move_up") {
             g1.moveRobotUp(); 
